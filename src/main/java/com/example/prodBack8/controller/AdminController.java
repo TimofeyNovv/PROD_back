@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +22,13 @@ public class AdminController {
      */
     @Operation(
             summary = "Создать группу учеников с ресурсами",
-            description = "Создает новую группу с указанными лимитами и распределением GPU"
+            description = "Создает новую группу с указанными лимитами и распределением GPU",
+            security = @SecurityRequirement(name = "jwtAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Группа успешно создана"),
-            @ApiResponse(responseCode = "400", description = "Некорректные данные группы")
+            @ApiResponse(responseCode = "400", description = "Некорректные данные группы"),
+            @ApiResponse(responseCode = "403", description = "нет прав доступа")
     })
     @PostMapping("/group")
     public ResponseEntity<?> createResourceGroup(@RequestBody CreateGroupRequest request) {
@@ -39,12 +42,13 @@ public class AdminController {
      */
     @Operation(
             summary = "Обновить лимиты группы",
-            description = "Устанавливает ограничения на использование GPU для группы: максимальное время сессии и разрешенные часы работы"
-    )
+            description = "Устанавливает ограничения на использование GPU для группы: максимальное время сессии и разрешенные часы работы",
+            security = @SecurityRequirement(name = "jwtAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Лимиты успешно обновлены"),
             @ApiResponse(responseCode = "400", description = "Некорректные данные лимитов"),
-            @ApiResponse(responseCode = "404", description = "Группа не найдена")
+            @ApiResponse(responseCode = "404", description = "Группа не найдена"),
+            @ApiResponse(responseCode = "403", description = "нет прав доступа")
     })
     @PutMapping("/groups/{groupId}/limits")
     public ResponseEntity<?> updateGroupLimits(

@@ -6,6 +6,7 @@ import com.example.prodBack8.services.auth.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +22,13 @@ public class AuthController {
 
     @Operation(
             summary = "Регистрация нового пользователя",
-            description = "Создает нового пользователя."
+            description = "Создает нового пользователя.",
+            security = @SecurityRequirement(name = "jwtAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Пользователь успешно зарегистрирован"),
-            @ApiResponse(responseCode = "409", description = "пользователь с таким username уже существует")
+            @ApiResponse(responseCode = "409", description = "пользователь с таким username уже существует"),
+            @ApiResponse(responseCode = "403", description = "нет прав доступа")
     })
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -46,19 +49,4 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
-
-    /*
-    @Operation(
-            summary = "Получить текущего пользователя",
-            description = "Возвращает информацию о текущем аутентифицированном пользователе"
-    )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Информация о пользователе"),
-            @ApiResponse(responseCode = "401", description = "Пользователь не аутентифицирован")
-    })
-    @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser() {
-        return ResponseEntity.ok().build();
-    }
-     */
 }

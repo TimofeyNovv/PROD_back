@@ -1,5 +1,6 @@
 package com.example.prodBack8.config;
 
+import com.example.prodBack8.model.entity.user.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +33,7 @@ public class SecurityConfig {
                                         "/swagger-resources/**"
                                 )
                                 .permitAll()
+                                .requestMatchers("/api/admin/**", "api/auth/register").hasAuthority("ADMIN")
                                 .anyRequest()
                                 .authenticated()
                 )
