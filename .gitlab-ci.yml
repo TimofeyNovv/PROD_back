@@ -23,7 +23,7 @@ deploy:
   extends:
     - .docker_run
     - .global-variables
-    - .rules-merge-or-master
+    - .rules-main
 #  variables:
 #    OPT_DOCKER: "-p 80:80"
 
