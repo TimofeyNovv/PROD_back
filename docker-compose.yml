@@ -1,0 +1,33 @@
+services:
+  application:
+    image: openjdk:18
+    container_name: application
+    build:
+      context: .
+    working_dir: /app
+    #volumes:
+    #  - ./target/spring-0.0.1-SNAPSHOT.jar:/app/spring-0.0.1-SNAPSHOT.jar
+    ports:
+      - "80:80"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/testdb
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=secret
+    depends_on:
+      - postgres
+    #command: ["java", "-jar", "spring-0.0.1-SNAPSHOT.jar"]
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=testdb
+#    ports:
+#      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
