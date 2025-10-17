@@ -1,11 +1,13 @@
 package com.example.prodBack8.controller;
 
-import com.example.prodBack8.dto.admin.AddUserRequest;
 import com.example.prodBack8.dto.admin.CreateGroupRequest;
+import com.example.prodBack8.dto.admin.UpdateGroupLimitsRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,60 +27,36 @@ public class AdminController {
             @ApiResponse(responseCode = "200", description = "Группа успешно создана"),
             @ApiResponse(responseCode = "400", description = "Некорректные данные группы")
     })
-    @PostMapping("/add/group")
+    @PostMapping("/group")
     public ResponseEntity<?> createResourceGroup(@RequestBody CreateGroupRequest request) {
         // TODO: создать новую группу с лимитами
         return ResponseEntity.ok().build();
     }
 
     /**
-     * Добавить пользователя в группу
+     * Обновить лимиты использования для группы
      */
     @Operation(
-            summary = "Добавить пользователя в группу",
-            description = "Добавляет существующего пользователя в группу и устанавливает пользователю группу"
+            summary = "Обновить лимиты группы",
+            description = "Устанавливает ограничения на использование GPU для группы: максимальное время сессии и разрешенные часы работы"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Пользователь успешно добавлен"),
-            @ApiResponse(responseCode = "404", description = "Пользователь или группа не найдены")
+            @ApiResponse(responseCode = "200", description = "Лимиты успешно обновлены"),
+            @ApiResponse(responseCode = "400", description = "Некорректные данные лимитов"),
+            @ApiResponse(responseCode = "404", description = "Группа не найдена")
     })
-    @PostMapping("/add/user")
-    public ResponseEntity<?> addUserToGroup(@RequestBody AddUserRequest request) {
-        // TODO: добавить пользователя и установит пользователю группу
+    @PutMapping("/groups/{groupId}/limits")
+    public ResponseEntity<?> updateGroupLimits(
+            @Parameter(description = "ID группы ресурсов") @PathVariable Long groupId,
+            @Valid @RequestBody UpdateGroupLimitsRequest request) {
+
+        // TODO: найти группу по ID
+        // TODO: обновить лимиты в сущности группы
+        // TODO: сохранить изменения
+        // TODO: вернуть обновленную группу
+
         return ResponseEntity.ok().build();
     }
-
-    /**
-     * Получить статистику использования GPU
-     */
-    @Operation(
-            summary = "Информация о группе",
-            description = "Возвращает информацию о группе по её id"
-    )
-    @ApiResponse(responseCode = "200", description = "Статистика успешно получена")
-    @GetMapping("/usage-stats/{id}")
-    public ResponseEntity<?> getUsageStatistics(@PathVariable Integer id) {
-        // TODO: вернуть информацию группы по id
-        return ResponseEntity.ok().build();
-    }
-
-    /**
-     * Получить историю всех запусков
-     */
-
-    //_______НУЖНО ПЕРЕДЕЛАТЬ КАК СКАЖЕТ ПРОДАКТ____________
-    /*
-    @Operation(
-            summary = "История всех запусков",
-            description = "Возвращает полную историю всех бронирований GPU с возможностью фильтрации"
-    )
-    @ApiResponse(responseCode = "200", description = "История успешно получена")
-    @GetMapping("/reservations/history")
-    public ResponseEntity<?> getAllReservationsHistory() {
-        // TODO: вернуть полную историю бронирований
-        return ResponseEntity.ok().build();
-    }
-    */
 
 
 }
