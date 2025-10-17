@@ -25,8 +25,7 @@ public class AuthController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Пользователь успешно зарегистрирован"),
-            @ApiResponse(responseCode = "400", description = "Некорректные данные пользователя"),
-            @ApiResponse(responseCode = "409", description = "Пользователь с таким email/username уже существует")
+            @ApiResponse(responseCode = "409", description = "пользователь с таким username уже существует")
     })
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -40,7 +39,8 @@ public class AuthController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Успешный вход"),
-            @ApiResponse(responseCode = "401", description = "Неверные учетные данные")
+            @ApiResponse(responseCode = "404", description = "пользователь с таким именем не найден"),
+            @ApiResponse(responseCode = "400", description = "неверный пароль")
     })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {

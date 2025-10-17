@@ -4,6 +4,7 @@ package com.example.prodBack8.services.auth;
 import com.example.prodBack8.dto.auth.LoginRequest;
 import com.example.prodBack8.dto.auth.LoginResponse;
 import com.example.prodBack8.dto.auth.RegisterRequest;
+import com.example.prodBack8.exceptions.InvalidPasswordException;
 import com.example.prodBack8.exceptions.UserAlreadyExistsException;
 import com.example.prodBack8.exceptions.UserNotFoundException;
 import com.example.prodBack8.model.entity.user.UserEntity;
@@ -52,6 +53,7 @@ public class AuthenticationService {
         if (!userRepository.existsByUsername(username)) {
             throw new UserNotFoundException("User with email -" + username + " not found");
         }
+        try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getUsername(),
@@ -64,5 +66,9 @@ public class AuthenticationService {
             return LoginResponse.builder()
                     .accessToken(jwtToken)
                     .build();
+        } catch (BadCredentialsException e) {
+            throw new InvalidPasswordException("Invalid password");
+
         }
+    }
 }
