@@ -25,9 +25,11 @@ public class UserController {
                     @ApiResponse(responseCode = "409", description = "в данный момент нету свободной GPU")
             }
     )
-    @PostMapping("startsession/{id}")
-    public ResponseEntity<?> startGPUSession(@PathVariable Long userId){
+    @PostMapping("startsession/{userId}")
+    public ResponseEntity<?> startGPUSession(@PathVariable Long userId) {
         return ResponseEntity.ok().build();
     }
+
+
 
 }
