@@ -1,6 +1,6 @@
 include:
-  - local: "deploy.yaml"
-  - local: "rules.yaml"
+  - local: "jobs/deploy.yaml"
+  - local: "jobs/rules.yaml"
 
 .global-variables:
   variables:
