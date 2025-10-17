@@ -30,6 +30,15 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(
+            summary = "закончить сессию с gpu",
+            description = "заканчивает сессию с gpu"
+    )
+    @PostMapping("endsession/{userId}")
+    public ResponseEntity<?> endGPUSession(@PathVariable Long userId){
+        //нужно записать время использования и время конца использования в таске
+        return ResponseEntity.ok().build();
+    }
 
 
 }

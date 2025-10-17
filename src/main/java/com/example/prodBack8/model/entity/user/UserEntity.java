@@ -3,6 +3,7 @@ package com.example.prodBack8.model.entity.user;
 import com.example.prodBack8.model.entity.BaseEntity;
 import com.example.prodBack8.model.entity.group.GroupEntity;
 import com.example.prodBack8.model.entity.history.TaskEntity;
+import com.example.prodBack8.model.entity.history.TaskStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,8 +35,14 @@ public class UserEntity extends BaseEntity {
     private GroupEntity group; // Группа к которой привязан пользователь
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<TaskEntity> reservations = new ArrayList<>();
+    private List<TaskEntity> tasks = new ArrayList<>();
 
+    public TaskEntity getCurrentTask() {
+        return tasks.stream()
+                .filter(task -> task.getStatus() == TaskStatus.ACTIVE)
+                .findFirst()
+                .orElse(null);
+    }
     /*
     @OneToMany(mappedBy = "user")
     private List<QueueItem> queueItems = new ArrayList<>();
