@@ -2,6 +2,7 @@ package com.example.prodBack8.controller;
 
 import com.example.prodBack8.dto.admin.CreateGroupRequest;
 import com.example.prodBack8.dto.admin.SetGroupForUserRequest;
+import com.example.prodBack8.dto.admin.SetRemainingUsageTimeGPURequest;
 import com.example.prodBack8.dto.admin.UpdateGroupLimitsRequest;
 import com.example.prodBack8.model.entity.group.GroupEntity;
 import com.example.prodBack8.services.implServices.GroupServiceImpl;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 @Tag(name = "Admin", description = "API для администратора")
+@SecurityRequirement(name = "jwtAuth")
 public class AdminController {
 
     private final GroupServiceImpl groupService;
@@ -28,8 +30,7 @@ public class AdminController {
 
     @Operation(
             summary = "обновить лимиты для группы",
-            description = "обнвляет или устанавливает лимиты использования для группы",
-            security = @SecurityRequirement(name = "jwtAuth")
+            description = "обнвляет или устанавливает лимиты использования для группы"
     )
     @ApiResponses(
             {
@@ -45,8 +46,7 @@ public class AdminController {
 
     @Operation(
             summary = "Создать группу учеников с ресурсами",
-            description = "Создает новую группу с указанными лимитами и распределением GPU",
-            security = @SecurityRequirement(name = "jwtAuth")
+            description = "Создает новую группу с указанными лимитами и распределением GPU"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Группа успешно создана"),
@@ -60,8 +60,7 @@ public class AdminController {
 
     @Operation(
             summary = "установить группу пользователю",
-            description = "устанавливает группу пользователю по имени пользователя и имени группы",
-            security = @SecurityRequirement(name = "jwtAuth")
+            description = "устанавливает группу пользователю по имени пользователя и имени группы"
     )
     @ApiResponses(
             {
@@ -76,12 +75,20 @@ public class AdminController {
     }
 
     @Operation(
-            summary = "Получить список всех групп",
-            security = @SecurityRequirement(name = "jwtAuth")
+            summary = "Получить список всех групп"
     )
     @GetMapping("/group/all")
     public List<GroupEntity> getAllGroups() {
         return groupService.getAllGroups();
+    }
+
+    @Operation(
+            summary = "Добавить время на использование GPU пользователю"
+    )
+    @PatchMapping("/user/time")
+    public ResponseEntity<?> setRemainingUsageTimeGPU(@RequestBody SetRemainingUsageTimeGPURequest request){
+        userService.setRemainingUsageTimeGPU(request);
+        return ResponseEntity.ok().build();
     }
 
 
