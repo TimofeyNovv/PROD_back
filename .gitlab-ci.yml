@@ -1,6 +1,7 @@
 include:
   - local: "jobs/deploy.yaml"
   - local: "jobs/rules.yaml"
+  - local: "jobs/build.yaml"
 
 .global-variables:
   variables:
@@ -9,14 +10,14 @@ include:
     SSH_PRIVATE_KEY_BASE64: "$ENV_PRIVATE_KEY_BASE64"
 
 stages:
-#  - build
+  - build
   - deploy
 
-#build:
-#  stage: build
-#  extends:
-#    - .build
-#    - .rules-merge-or-master
+build:
+  stage: build
+  extends:
+    - .build
+    - .rules-merge-or-main
 
 deploy:
   stage: deploy
