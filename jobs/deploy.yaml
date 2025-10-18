@@ -36,7 +36,7 @@
     - ssh $SSH_ADDRESS "docker rm $CI_PROJECT_NAME || true"
     #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml down application"
     #- ssh $SSH_ADDRESS "docker compose down application"
-    - ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR} up -d --force-recreate application"
+    - ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR} up -d --force-recreate ${CI_PROJECT_NAME}"
 #    - ssh $SSH_ADDRESS "
 #      docker run -d
 #      --log-driver local
