@@ -5,11 +5,15 @@ import com.example.prodBack8.model.entity.group.GroupEntity;
 import com.example.prodBack8.model.entity.group.UsageLimit;
 import com.example.prodBack8.model.entity.history.TaskEntity;
 import com.example.prodBack8.model.entity.history.TaskStatus;
+import com.example.prodBack8.model.entity.queue.QueueEntity;
+import com.example.prodBack8.model.entity.queue.QueueStatus;
 import com.example.prodBack8.model.entity.user.UserEntity;
 import com.example.prodBack8.repository.GroupRepository;
+import com.example.prodBack8.repository.QueueRepository;
 import com.example.prodBack8.repository.TaskRepository;
 import com.example.prodBack8.services.TaskService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,15 +21,18 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final GroupRepository groupRepository;
+    private final QueueRepository queueRepository;
 
     @Override
     public void startGPUSession(UserEntity userEntity) {
@@ -70,17 +77,92 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new NoActiveSessionException("У пользователя нет активной сессии"));
 
         activeTask.setEndTime(LocalDateTime.now());
-
-
         Duration usageDuration = Duration.between(activeTask.getStartTime(), activeTask.getEndTime());
         long minutes = usageDuration.toMinutes();
         activeTask.setUsageDuration((int) minutes);
-
         activeTask.setStatus(TaskStatus.COMPLETED);
         taskRepository.save(activeTask);
+
         GroupEntity group = userEntity.getGroup();
         group.setCurrentGPUCount(userEntity.getGroup().getCurrentGPUCount() + 1);
         groupRepository.save(group);
+
+        distributeGPUToQueue(group.getId());
+    }
+
+    public void distributeGPUToQueue(Integer groupId) {
+        log.info("Начинаем распределение GPU для группы {}", groupId);
+
+        GroupEntity group = groupRepository.findById(Long.valueOf(groupId))
+                .orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
+
+        int availableGPUs = group.getCurrentGPUCount();
+
+        if (availableGPUs <= 0) {
+            log.info("Нет свободных GPU для распределения в группе {}", groupId);
+            return;
+        }
+
+        // Получаем пользователей из очереди в порядке позиций
+        List<QueueEntity> waitingQueue = queueRepository.findByGroupIdAndStatusOrderByPositionAsc(
+                groupId, QueueStatus.WAITING);
+
+        if (waitingQueue.isEmpty()) {
+            log.info("В очереди группы {} нет ожидающих пользователей", groupId);
+            return;
+        }
+
+        int allocatedGPUs = 0;
+
+
+        for (QueueEntity queueItem : waitingQueue) {
+            if (allocatedGPUs >= availableGPUs) {
+                break;
+            }
+
+            try {
+                UserEntity user = queueItem.getUser();
+
+                // Запускаем GPU сессию для пользователя
+                startGPUSessionForQueueUser(user, queueItem);
+                allocatedGPUs++;
+
+                log.info("Выделен GPU пользователю {} из очереди (позиция {})",
+                        user.getUsername(), queueItem.getPosition());
+
+            } catch (Exception e) {
+                log.error("Ошибка при выделении GPU пользователю {}: {}",
+                        queueItem.getUser().getUsername(), e.getMessage());
+            }
+        }
+
+        log.info("Распределено {} GPU из {} доступных для группы {}",
+                allocatedGPUs, availableGPUs, groupId);
+    }
+    private void startGPUSessionForQueueUser(UserEntity user, QueueEntity queueItem) {
+        boolean hasActiveSession = taskRepository.findByUserAndStatus(user, TaskStatus.ACTIVE).isPresent();
+        if (hasActiveSession) {
+            throw new ActiveSessionException("У пользователя уже есть активная сессия");
+        }
+
+        TaskEntity task = TaskEntity.builder()
+                .countGPU(1)
+                .user(user)
+                .group(user.getGroup())
+                .startTime(LocalDateTime.now())
+                .status(TaskStatus.ACTIVE)
+                .build();
+
+        GroupEntity group = user.getGroup();
+        group.setCurrentGPUCount(group.getCurrentGPUCount() - 1);
+        groupRepository.save(group);
+
+        taskRepository.save(task);
+
+        queueItem.setStatus(QueueStatus.ACTIVE);
+        queueRepository.save(queueItem);
+
+        log.info("Запущена GPU сессия для пользователя {} из очереди", user.getUsername());
     }
 
     @Override

@@ -78,10 +78,6 @@ public class QueueServiceImpl implements QueueService {
 
 
     private boolean isGroupAvailable(GroupEntity group) {
-        // Проверяем базовую доступность группы
-        if (group == null || group.getCurrentGPUCount() == null || group.getCurrentGPUCount() <= 0) {
-            return false;
-        }
 
         // Проверяем ограничения по времени, если они установлены
         UsageLimit usageLimit = group.getUsageLimit();

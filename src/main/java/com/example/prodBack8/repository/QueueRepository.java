@@ -36,4 +36,7 @@ public interface QueueRepository extends JpaRepository<QueueEntity, Long> {
             "AND q.status = 'WAITING'")
     void updatePositionsAfterRemoval(@Param("groupId") Long groupId,
                                      @Param("removedPosition") Integer removedPosition);
+
+
+    List<QueueEntity> findByGroupIdAndStatusOrderByPositionAsc(Integer groupId, QueueStatus status);
 }
