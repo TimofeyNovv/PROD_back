@@ -51,4 +51,34 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse("NO_ACTIVE_SESSIONS", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
+
+    @ExceptionHandler(YouAreInTheQueueException.class)
+    public ResponseEntity<ErrorResponse> handleYouAreInTheQueue(YouAreInTheQueueException ex){
+        ErrorResponse errorResponse = new ErrorResponse("YOU_IN_QUEUE", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(ActiveSessionException.class)
+    public ResponseEntity<ErrorResponse> handleActiveSession(ActiveSessionException ex){
+        ErrorResponse errorResponse = new ErrorResponse("ACTIVE_SESSION", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(TimeGroupException.class)
+    public ResponseEntity<ErrorResponse> handleTimeGroup(TimeGroupException ex){
+        ErrorResponse errorResponse = new ErrorResponse("TIME_GROUP", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(UserInQueueNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserInQueueNotFound(UserInQueueNotFoundException ex){
+        ErrorResponse errorResponse = new ErrorResponse("USER_IN_QUEUE_NOT_FOUND", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(ForbiddenGPUInCurrentTimeException.class)
+    public ResponseEntity<ErrorResponse> HandleForbiddenGPUInCurrentTime(ForbiddenGPUInCurrentTimeException ex){
+        ErrorResponse errorResponse = new ErrorResponse("FORBIDDEN_GPU_IN_CURRENT_TIME", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 }

@@ -1,8 +1,6 @@
 package com.example.prodBack8.services.implServices;
 
-import com.example.prodBack8.exceptions.GroupNotFoundException;
-import com.example.prodBack8.exceptions.NoActiveSessionException;
-import com.example.prodBack8.exceptions.NoGPULeftException;
+import com.example.prodBack8.exceptions.*;
 import com.example.prodBack8.model.entity.group.GroupEntity;
 import com.example.prodBack8.model.entity.group.UsageLimit;
 import com.example.prodBack8.model.entity.history.TaskEntity;
@@ -19,6 +17,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,18 +26,28 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final GroupRepository groupRepository;
+
     @Override
     public void startGPUSession(UserEntity userEntity) {
 
-        if (userEntity.getGroup().getCurrentGPUCount() == 0){
+        Optional<TaskEntity> existingActiveTask = taskRepository.findByUserIdAndStatus(Long.valueOf(userEntity.getId()), TaskStatus.ACTIVE)
+                .stream()
+                .findFirst();
+
+        if (existingActiveTask.isPresent()) {
+            throw new ActiveSessionException("У вас уже есть активная сессия GPU");
+        }
+
+        if (userEntity.getGroup().getCurrentGPUCount() == 0) {
             throw new NoGPULeftException("у данной группы нету свободных GPU");
         }
 
         if (!isAllowedDayAndTime(userEntity.getGroup().getUsageLimit().getAllowedDays(),
                 userEntity.getGroup().getUsageLimit().getDayStartTime(),
                 userEntity.getGroup().getUsageLimit().getDayEndTime())) {
-            throw new NoGPULeftException("Использование GPU не разрешено в текущее время");
+            throw new ForbiddenGPUInCurrentTimeException("Использование GPU не разрешено в текущее время");
         }
+
 
         TaskEntity task = TaskEntity.builder()
                 .countGPU(1)
@@ -137,7 +146,7 @@ public class TaskServiceImpl implements TaskService {
         return String.format("%s - %s", startTime, endTime);
     }
 
-    private boolean isAllowedDayAndTime(String allowedDays, String dayStartTime, String dayEndTime){
+    private boolean isAllowedDayAndTime(String allowedDays, String dayStartTime, String dayEndTime) {
         if (!isCurrentDayAllowed(allowedDays)) {
             return false;
         }
@@ -165,11 +174,13 @@ public class TaskServiceImpl implements TaskService {
     private boolean isCurrentTimeAllowed(String dayStartTime, String dayEndTime) {
 
         try {
+            System.out.println("норм1");
             // Парсим время из строк "10:00"
             LocalTime startTime = LocalTime.parse(dayStartTime);
             LocalTime endTime = LocalTime.parse(dayEndTime);
             LocalTime currentTime = LocalTime.now();
 
+            System.out.println("норм2");
             // Проверяем, что текущее время в разрешенном интервале
             return !currentTime.isBefore(startTime) && !currentTime.isAfter(endTime);
         } catch (Exception e) {

@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends JpaRepository<TaskEntity, Long> {
     Optional<TaskEntity> findByUserAndStatus(UserEntity userEntity, TaskStatus status);
+
+    Optional<TaskEntity> findByUserIdAndStatus(Long userId, TaskStatus status);
 }

@@ -4,6 +4,8 @@ import com.example.prodBack8.model.entity.BaseEntity;
 import com.example.prodBack8.model.entity.group.GroupEntity;
 import com.example.prodBack8.model.entity.history.TaskEntity;
 import com.example.prodBack8.model.entity.history.TaskStatus;
+import com.example.prodBack8.model.entity.queue.QueueEntity;
+import com.example.prodBack8.model.entity.queue.QueueStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,13 +45,15 @@ public class UserEntity extends BaseEntity implements UserDetails{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<TaskEntity> tasks = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<QueueEntity> queueItems = new ArrayList<>();
+
     public TaskEntity getCurrentTask() {
         return tasks.stream()
                 .filter(task -> task.getStatus() == TaskStatus.ACTIVE)
                 .findFirst()
                 .orElse(null);
     }
-
 
     @Override
     public String getUsername() {

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final TaskServiceImpl taskService;
+
     @Operation(
             summary = "начать сессию с gpu",
             description = "начинает сессию с gpu"
@@ -27,8 +28,9 @@ public class UserController {
     @ApiResponses(
             {
                     @ApiResponse(responseCode = "200", description = "Сессия успешно начата"),
-                    @ApiResponse(responseCode = "409", description = "в данный момент нету свободной GPU")
-            }
+                    @ApiResponse(responseCode = "404", description = "в данный момент нету свободной GPU"),
+                    @ApiResponse(responseCode = "409", description = "уже есть активная сессия с GPU"),
+                    @ApiResponse(responseCode = "400", description = "в текущее время нельзя начать сессию с GPU")}
     )
     @PostMapping("/startsession")
     public ResponseEntity<?> startGPUSession(@AuthenticationPrincipal UserEntity currentUser) {
@@ -43,7 +45,7 @@ public class UserController {
     @ApiResponses(
             {
                     @ApiResponse(responseCode = "200", description = "успешный конец сессии"),
-                    @ApiResponse(responseCode = "404", description = "в пользователя не найдено активных сессий")
+                    @ApiResponse(responseCode = "404", description = "у пользователя не найдено активных сессий")
             }
     )
     @PostMapping("/endsession")
@@ -51,7 +53,6 @@ public class UserController {
         taskService.endGPUSession(currentUser);
         return ResponseEntity.ok().build();
     }
-
 
 
     @Operation(
@@ -84,7 +85,6 @@ public class UserController {
     }
 
 
-
     @Operation(
             summary = "узнать какое распределение у группы",
             description = "узнать какое распределение у группы пользователя"
@@ -100,7 +100,6 @@ public class UserController {
     }
 
 
-
     @Operation(
             summary = "узнать максимальное время выполнение задачи",
             description = "узнать максимальное время выполнение задачи в группе пользователя"
@@ -111,7 +110,7 @@ public class UserController {
             }
     )
     @GetMapping("/group/maxsession")
-    public Integer getMaxSessionDurationGroupByUserId(@AuthenticationPrincipal UserEntity currentUser){
+    public Integer getMaxSessionDurationGroupByUserId(@AuthenticationPrincipal UserEntity currentUser) {
         return taskService.getMaxSessionDurationGroupByUserId(currentUser);
     }
 
@@ -126,7 +125,7 @@ public class UserController {
             }
     )
     @GetMapping("/group/time")
-    public String getAllowedTimeGroupByUserId(@AuthenticationPrincipal UserEntity currentUser){
+    public String getAllowedTimeGroupByUserId(@AuthenticationPrincipal UserEntity currentUser) {
         return taskService.getAllowedTimeGroupByUserId(currentUser);
     }
 }
