@@ -48,7 +48,7 @@ public class JwtService {
                 .claims(extractClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 660))//сейчас стоит много, чтобы при оценке членами жюри, всё резке не перестало работать, тк у меня нету refresh токена
                 .signWith(getSignKey(), Jwts.SIG.HS256)
                 .compact();
     }

@@ -103,7 +103,6 @@ public class TaskServiceImpl implements TaskService {
             return;
         }
 
-        // Получаем пользователей из очереди в порядке позиций
         List<QueueEntity> waitingQueue = queueRepository.findByGroupIdAndStatusOrderByPositionAsc(
                 groupId, QueueStatus.WAITING);
 
