@@ -1,5 +1,6 @@
 package com.example.prodBack8;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -7,7 +8,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ProdBack8Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ProdBack8Application.class, args);
+
+        Dotenv dotenv = Dotenv.configure().load();
+        dotenv.entries().forEach(e -> System.setProperty(e.getKey(), e.getValue()));
+
+        SpringApplication.run(ProdBack8Application.class, args);
 	}
 
 }
