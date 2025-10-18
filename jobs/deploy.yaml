@@ -35,6 +35,7 @@
     DB_ENV: "-e POSTGRES_USER=${DB_USER} \ -e POSTGRES_PASSWORD=${DB_PASSWORD} \ -e POSTGRES_DB={DB_DATABASE}"
     CONTAINER_NAME_SUFFIX: ""
   script:
+    - AUTH_COMMAND="echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin";
     - ssh $SSH_ADDRESS "$AUTH_COMMAND"
     - ssh $SSH_ADDRESS "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
     - ssh $SSH_ADDRESS "docker stop $CI_PROJECT_NAME || true"
@@ -47,7 +48,6 @@
       $DB_ENV
       $CI_DB_OPT
       $DB_IMAGE_NAME"
-    #- AUTH_COMMAND="echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin";
     #- ssh $SSH_ADDRESS "$AUTH_COMMAND"
     #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml build application"
     #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
