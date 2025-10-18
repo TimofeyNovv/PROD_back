@@ -27,9 +27,15 @@
     DOCKER_DRIVER: overlay2
     PRUNE_COMMAND: "docker system prune -f -a"
     CONTAINER_NAME_SUFFIX: ""
+  before_script:
+    - apk add curl jq
   script:
     - AUTH_COMMAND="echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin";
     - ssh $SSH_ADDRESS "$AUTH_COMMAND"
+    - compose-yaml=$(curl -H "JOB_TOKEN:$CI_JOB_TOKEN" "https://gitlab.prodcontest.ru/api/v4/projects/621/repository/files/docker-compose%2Eyaml?ref=main")
+    - content=$(echo $test_yaml | jq .content | base64 -d)
+    - echo "$content" >> docker-compose.yaml
+    - cat test.yaml
     #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml build application"
     - ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
     - ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml down $CI_PROJECT_NAME || true"
