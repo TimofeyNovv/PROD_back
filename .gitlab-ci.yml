@@ -28,5 +28,5 @@ deploy:
     - .global-variables
     - .rules-main
   variables:
-    OPT_DOCKER: "-p 80:80"
+    OPT_DOCKER: "-p 80:8080"
 
