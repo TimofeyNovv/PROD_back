@@ -17,6 +17,7 @@ public class GroupEntity extends BaseEntity {
 
     private String name;
     private Integer GPUcount;
+    private Integer currentGPUCount;
     private Integer distribution;
 
     @Embedded

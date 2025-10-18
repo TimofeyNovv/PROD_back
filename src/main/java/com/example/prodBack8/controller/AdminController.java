@@ -1,9 +1,11 @@
 package com.example.prodBack8.controller;
 
 import com.example.prodBack8.dto.admin.CreateGroupRequest;
+import com.example.prodBack8.dto.admin.SetGroupForUserRequest;
 import com.example.prodBack8.dto.admin.UpdateGroupLimitsRequest;
-import com.example.prodBack8.model.entity.user.UserEntity;
+import com.example.prodBack8.model.entity.group.GroupEntity;
 import com.example.prodBack8.services.implServices.GroupServiceImpl;
+import com.example.prodBack8.services.implServices.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,9 +13,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     private final GroupServiceImpl groupService;
+    private final UserServiceImpl userService;
 
     @Operation(
             security = @SecurityRequirement(name = "jwtAuth")
@@ -47,40 +50,23 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-
-    /*@Operation(
+    @Operation(
             security = @SecurityRequirement(name = "jwtAuth")
     )
-    @PutMapping("groups/set/{groupId}")
-    public ResponseEntity<?> updateGroupL(
-            @PathVariable Long groupId,
-            @RequestBody UpdateGroupLimitsRequest request
-    ){
-        groupService.updateGroupLimits(groupId, request);
+    @PostMapping("/user/sgroup")
+    public ResponseEntity<?> setGroupForUser(@RequestBody SetGroupForUserRequest request){
+        userService.setGroupForUser(request);
         return ResponseEntity.ok().build();
     }
 
-
     @Operation(
-            summary = "Обновить лимиты группы",
-            description = "Устанавливает ограничения на использование GPU для группы: максимальное время сессии и разрешенные часы работы",
+            description = "Получить список всех групп",
             security = @SecurityRequirement(name = "jwtAuth")
     )
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Лимиты успешно обновлены"),
-            @ApiResponse(responseCode = "404", description = "Группа не найдена"),
-            @ApiResponse(responseCode = "403", description = "нет прав доступа")
-    })
-    @GetMapping("/groups/limits")
-    public ResponseEntity<?> updateGroupLimits(
-            @Parameter(description = "ID группы ресурсов") @PathVariable Long groupId,
-            @RequestBody UpdateGroupLimitsRequest request, @AuthenticationPrincipal UserEntity currentUser, Authentication authentication) {
-        System.out.println("Authentication: " + authentication);
-        System.out.println("Authorities: " + authentication.getAuthorities());
-        System.out.println("Principal: " + authentication.getPrincipal());
+    @GetMapping("/group/all")
+    public List<GroupEntity> getAllGroups(){
+        return groupService.getAllGroups();
+    }
 
-        System.out.println(currentUser.getUsername());
-        //groupService.updateGroupLimits(1L, request);
-        return ResponseEntity.ok().build();
-    }*/
+
 }

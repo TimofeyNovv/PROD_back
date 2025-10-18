@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -28,6 +30,7 @@ public class GroupServiceImpl implements GroupService {
         GroupEntity entity = GroupEntity.builder()
                 .name(nameGroup)
                 .GPUcount(request.getGPUcount())
+                .currentGPUCount(request.getGPUcount() * (100/request.getDistribution()))
                 .distribution(request.getDistribution())
                 .build();
         repository.save(entity);
@@ -46,5 +49,10 @@ public class GroupServiceImpl implements GroupService {
 
         groupEntity.setUsageLimit(usageLimit);
         repository.save(groupEntity);
+    }
+
+    @Override
+    public List<GroupEntity> getAllGroups() {
+        return repository.findAll();
     }
 }

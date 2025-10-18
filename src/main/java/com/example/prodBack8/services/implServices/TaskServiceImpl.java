@@ -1,9 +1,11 @@
 package com.example.prodBack8.services.implServices;
 
 import com.example.prodBack8.exceptions.NoGPULeftException;
+import com.example.prodBack8.model.entity.group.GroupEntity;
 import com.example.prodBack8.model.entity.history.TaskEntity;
 import com.example.prodBack8.model.entity.history.TaskStatus;
 import com.example.prodBack8.model.entity.user.UserEntity;
+import com.example.prodBack8.repository.GroupRepository;
 import com.example.prodBack8.repository.TaskRepository;
 import com.example.prodBack8.services.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +22,11 @@ import java.util.Arrays;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final GroupRepository groupRepository;
     @Override
     public void startGPUSession(UserEntity userEntity) {
 
-        if (userEntity.getGroup().getGPUcount() == 0){
+        if (userEntity.getGroup().getCurrentGPUCount() == 0){
             throw new NoGPULeftException("у данной группы нету свободных GPU");
         }
 
@@ -41,7 +44,11 @@ public class TaskServiceImpl implements TaskService {
                 .status(TaskStatus.ACTIVE)
                 .build();
 
+        GroupEntity group = userEntity.getGroup();
+        group.setCurrentGPUCount(group.getCurrentGPUCount() - task.getCountGPU());
+        groupRepository.save(group);
         taskRepository.save(task);
+
     }
 
     private boolean isAllowedDayAndTime(String allowedDays, String dayStartTime, String dayEndTime){
