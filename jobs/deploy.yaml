@@ -17,32 +17,38 @@
   extends: .ssh
   stage: deploy
   variables:
-    OPT_DOCKER: ""
-    DOCKERFILE_PATH: Dockerfile
-    IMAGE_TAG: $CI_COMMIT_SHA
-    IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     DOCKER_HOST: tcp://docker:2376
     DOCKER_TLS_CERTDIR: "/certs"
     DOCKER_TLS_VERIFY: 1
     DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
     DOCKER_DRIVER: overlay2
-    PRUNE_COMMAND: "docker system prune -f -a"
-    CI_DB_CONTAINER_NAME: "postgres"
+
+    IMAGE_TAG: $CI_COMMIT_SHA
+    IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    DOCKERFILE_PATH: Dockerfile
+
+    CI_SPRING_OPT: "-p 80:8080"
     CI_DB_OPT: "-p 5432:5432"
-    DB_IMAGE_NAME: "postgres:18.0"
-    DB_USER: "root"
-    DB_PASSWORD: "secret"
-    DB_DATABASE: "testdb"
-    NET_NAME: "testnet"
+
+    CI_DB_CONTAINER_NAME: "postgres"
+    CI_SPRING_CONTAINER_NAME: "application"
+
+    DB_IMAGE: "postgres:18.0"
+    DB_USER: $DB_USER
+    DB_PASSWORD: $DB_PASSWORD
+    DB_DATABASE: $DB_DATABASE
+
+    NET_NAME: "ApplicationLevel"
+
     DB_ENV: "-e POSTGRES_USER=${DB_USER} \ -e POSTGRES_PASSWORD=${DB_PASSWORD} \ -e POSTGRES_DB=${DB_DATABASE}"
-    SPRING_ENV: " -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/testdb \ -e SPRING_DATASOURCE_USERNAME=root \ -e SPRING_DATASOURCE_PASSWORD=secret"
-    CONTAINER_NAME_SUFFIX: ""
+    SPRING_ENV: " -e SPRING_DATASOURCE_URL=jdbc:postgresql://${CI_DB_CONTAINER_NAME}:5432/${DB_DATABASE} \ -e SPRING_DATASOURCE_USERNAME=${DB_USER} \ -e SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}"
+
   script:
     - AUTH_COMMAND="echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin";
     - ssh $SSH_ADDRESS "$AUTH_COMMAND"
-    - ssh $SSH_ADDRESS "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
-    - ssh $SSH_ADDRESS "docker stop $CI_PROJECT_NAME || true"
-    - ssh $SSH_ADDRESS "docker rm $CI_PROJECT_NAME || true"
+    - ssh $SSH_ADDRESS "docker pull ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}"
+    - ssh $SSH_ADDRESS "docker stop ${CI_SPRING_CONTAINER_NAME} || true"
+    - ssh $SSH_ADDRESS "docker rm ${CI_SPRING_CONTAINER_NAME} || true"
     - ssh $SSH_ADDRESS "docker network create $NET_NAME || echo 'Net exists'"
     - ssh $SSH_ADDRESS "
       docker start ${CI_DB_CONTAINER_NAME} || docker run -d
@@ -52,30 +58,15 @@
       --network ${NET_NAME}
       $CI_DB_OPT
       $DB_ENV
-      $DB_IMAGE_NAME"
-    #- ssh $SSH_ADDRESS "$AUTH_COMMAND"
-    #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml build application"
-    #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
-    #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml down $CI_PROJECT_NAME || true"
-    #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml rm $CI_PROJECT_NAME || true"
-    #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml down application"
-    #- ssh $SSH_ADDRESS "docker compose down application"
-    #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR} up -d --force-recreate ${CI_PROJECT_NAME}"
+      $DB_IMAGE"
     - ssh $SSH_ADDRESS "
       docker run -d
       --log-driver local
       --log-opt max-size=100m
       --volume pgdata:/var/lib/postgresql/data
-      --name=$CI_PROJECT_NAME
+      --name=${CI_SPRING_CONTAINER_NAME}
       --network ${NET_NAME}
       $SPRING_ENV
-      $OPT_DOCKER
+      $CI_SPRING_OPT
       $IMAGE_NAME"
-    #    - ssh $SSH_ADDRESS "
-#      docker run -d
-#      --log-driver local
-#      --log-opt max-size=100m
-#      --name=$CI_PROJECT_NAME $OPT_DOCKER
-#      $IMAGE_NAME"
-    # - ssh $SSH_ADDRESS "$PRUNE_COMMAND"
 
