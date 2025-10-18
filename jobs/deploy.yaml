@@ -30,11 +30,11 @@
   script:
     - AUTH_COMMAND="echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin";
     - ssh $SSH_ADDRESS "$AUTH_COMMAND"
-    - ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml build application"
-    #- ssh $SSH_ADDRESS "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
-    #- ssh $SSH_ADDRESS "docker stop $CI_PROJECT_NAME || true"
-    #- ssh $SSH_ADDRESS "docker rm $CI_PROJECT_NAME || true"
-    - ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml down application"
+    #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml build application"
+    - ssh $SSH_ADDRESS "docker compose pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+    - ssh $SSH_ADDRESS "docker compose down $CI_PROJECT_NAME || true"
+    - ssh $SSH_ADDRESS "docker rm $CI_PROJECT_NAME || true"
+    #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml down application"
     #- ssh $SSH_ADDRESS "docker compose down application"
     - ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR} up -d --force-recreate application"
 #    - ssh $SSH_ADDRESS "
