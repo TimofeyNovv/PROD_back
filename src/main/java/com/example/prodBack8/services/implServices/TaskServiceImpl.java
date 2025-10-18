@@ -11,6 +11,7 @@ import com.example.prodBack8.model.entity.user.UserEntity;
 import com.example.prodBack8.repository.GroupRepository;
 import com.example.prodBack8.repository.QueueRepository;
 import com.example.prodBack8.repository.TaskRepository;
+import com.example.prodBack8.repository.UserRepository;
 import com.example.prodBack8.services.TaskService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final GroupRepository groupRepository;
     private final QueueRepository queueRepository;
+    private final UserRepository userRepository;
 
     @Override
     public void startGPUSession(UserEntity userEntity) {
@@ -86,6 +88,10 @@ public class TaskServiceImpl implements TaskService {
         GroupEntity group = userEntity.getGroup();
         group.setCurrentGPUCount(userEntity.getGroup().getCurrentGPUCount() + 1);
         groupRepository.save(group);
+
+        UserEntity user = userEntity;
+        user.setRemainingUsageTimeGPU(userEntity.getRemainingUsageTimeGPU() - activeTask.getUsageDuration());
+        userRepository.save(user);
 
         distributeGPUToQueue(group.getId());
     }

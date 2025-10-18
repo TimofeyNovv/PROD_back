@@ -19,6 +19,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
+
     @Override
     public void setGroupForUser(SetGroupForUserRequest request) {
         UserEntity user = userRepository.findByUsername(request.getUsername())
@@ -27,6 +28,12 @@ public class UserServiceImpl implements UserService {
         GroupEntity groupEntity = groupRepository.getGroupByName(request.getGroupName())
                 .orElseThrow(() -> new GroupNotFoundException("group with name - " + request.getGroupName() + " not found"));
         user.setGroup(groupEntity);
-        userRepository.save(user);
+        if (user.getRemainingUsageTimeGPU() == null) {
+            user.setRemainingUsageTimeGPU(groupEntity.getUsageLimit().getMaxSessionDurationMinutes());
+            userRepository.save(user);
+        } else {
+            user.setRemainingUsageTimeGPU(user.getRemainingUsageTimeGPU() + groupEntity.getUsageLimit().getMaxSessionDurationMinutes());
+            userRepository.save(user);
+        }
     }
 }

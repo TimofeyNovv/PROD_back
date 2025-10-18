@@ -48,6 +48,8 @@ public class UserEntity extends BaseEntity implements UserDetails{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<QueueEntity> queueItems = new ArrayList<>();
 
+    private Integer remainingUsageTimeGPU;
+
     public TaskEntity getCurrentTask() {
         return tasks.stream()
                 .filter(task -> task.getStatus() == TaskStatus.ACTIVE)
