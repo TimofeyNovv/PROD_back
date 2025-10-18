@@ -28,7 +28,7 @@ public class UserController {
     )
     @PostMapping("/startsession")
     public ResponseEntity<?> startGPUSession(@AuthenticationPrincipal UserEntity currentUser) {
-        System.out.println(currentUser.getUsername());
+
         return ResponseEntity.ok().build();
     }
 
