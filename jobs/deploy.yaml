@@ -28,7 +28,7 @@
     DOCKERFILE_PATH: Dockerfile
 
     CI_SPRING_OPT: "-p 80:8080"
-    CI_DB_OPT: "-p 5432:5432"
+    CI_DB_OPT: "-p 8100:5432"
 
     CI_DB_CONTAINER_NAME: "postgres"
     CI_SPRING_CONTAINER_NAME: "application"
