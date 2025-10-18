@@ -27,9 +27,17 @@ public class AdminController {
     private final UserServiceImpl userService;
 
     @Operation(
+            summary = "обновить лимиты для группы",
+            description = "обнвляет или устанавливает лимиты использования для группы",
             security = @SecurityRequirement(name = "jwtAuth")
     )
-    @PatchMapping("/test/{groupId}")
+    @ApiResponses(
+            {
+                    @ApiResponse(responseCode = "200", description = "Успешно обновлено"),
+                    @ApiResponse(responseCode = "404", description = "группа с таким idне найдена")
+            }
+    )
+    @PatchMapping("/group/limits/{groupId}")
     public ResponseEntity<?> test(@PathVariable Long groupId, @RequestBody UpdateGroupLimitsRequest request) {
         groupService.updateGroupLimits(groupId, request);
         return ResponseEntity.ok().build();
@@ -51,20 +59,28 @@ public class AdminController {
     }
 
     @Operation(
+            summary = "установить группу пользователю",
+            description = "устанавливает группу пользователю по имени пользователя и имени группы",
             security = @SecurityRequirement(name = "jwtAuth")
     )
-    @PostMapping("/user/sgroup")
-    public ResponseEntity<?> setGroupForUser(@RequestBody SetGroupForUserRequest request){
+    @ApiResponses(
+            {
+                    @ApiResponse(responseCode = "200", description = "успешно установленна"),
+                    @ApiResponse(responseCode = "404", description = "не найдена группа или пользователь")
+            }
+    )
+    @PostMapping("/user/group")
+    public ResponseEntity<?> setGroupForUser(@RequestBody SetGroupForUserRequest request) {
         userService.setGroupForUser(request);
         return ResponseEntity.ok().build();
     }
 
     @Operation(
-            description = "Получить список всех групп",
+            summary = "Получить список всех групп",
             security = @SecurityRequirement(name = "jwtAuth")
     )
     @GetMapping("/group/all")
-    public List<GroupEntity> getAllGroups(){
+    public List<GroupEntity> getAllGroups() {
         return groupService.getAllGroups();
     }
 
