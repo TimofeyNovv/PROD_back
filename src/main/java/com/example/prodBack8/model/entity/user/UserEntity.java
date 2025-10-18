@@ -36,7 +36,7 @@ public class UserEntity extends BaseEntity implements UserDetails{
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "group_id")
     private GroupEntity group; // Группа к которой привязан пользователь
 

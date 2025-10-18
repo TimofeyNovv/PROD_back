@@ -34,6 +34,6 @@ public class TaskEntity extends BaseEntity {
     private LocalDateTime endTime;
     private Duration usageDuration;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private TaskStatus status;
 }

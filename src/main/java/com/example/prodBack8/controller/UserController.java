@@ -1,11 +1,13 @@
 package com.example.prodBack8.controller;
 
 import com.example.prodBack8.model.entity.user.UserEntity;
+import com.example.prodBack8.services.implServices.TaskServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +16,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 @Tag(name = "User", description = "API для пользователя")
 @SecurityRequirement(name = "jwtAuth")
+@RequiredArgsConstructor
 public class UserController {
 
+    private final TaskServiceImpl taskService;
     @Operation(
             summary = "начать сессию с gpu",
             description = "начинает сессию с gpu"
@@ -28,7 +32,7 @@ public class UserController {
     )
     @PostMapping("/startsession")
     public ResponseEntity<?> startGPUSession(@AuthenticationPrincipal UserEntity currentUser) {
-
+        taskService.startGPUSession(currentUser);
         return ResponseEntity.ok().build();
     }
 
