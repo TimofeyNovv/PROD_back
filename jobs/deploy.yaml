@@ -47,8 +47,8 @@
       --log-driver local
       --log-opt max-size=100m
       --name=$CI_DB_CONTAINER_NAME
-      $SPRING_ENV
       $CI_DB_OPT
+      $DB_ENV
       $DB_IMAGE_NAME"
     #- ssh $SSH_ADDRESS "$AUTH_COMMAND"
     #- ssh $SSH_ADDRESS "docker compose -f ${CI_PROJECT_DIR}/docker-compose.yml build application"
@@ -64,7 +64,8 @@
       --log-opt max-size=100m
       --volume pgdata:/var/lib/postgresql/data
       --name=$CI_PROJECT_NAME $OPT_DOCKER
-      $DB_ENV
+      $SPRING_ENV
+      $OPT_DOCKER
       $IMAGE_NAME"
     #    - ssh $SSH_ADDRESS "
 #      docker run -d
