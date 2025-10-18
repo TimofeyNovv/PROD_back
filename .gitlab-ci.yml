@@ -21,6 +21,8 @@ build:
 
 deploy:
   stage: deploy
+  needs:
+    - build
   extends:
     - .docker_run
     - .global-variables
