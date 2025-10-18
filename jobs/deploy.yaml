@@ -34,6 +34,7 @@
     DB_PASSWORD: "secret"
     DB_DATABASE: "testdb"
     DB_ENV: "-e POSTGRES_USER=${DB_USER} \ -e POSTGRES_PASSWORD=${DB_PASSWORD} \ -e POSTGRES_DB={DB_DATABASE}"
+    SPRING_ENV: " -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/testdb \ -e SPRING_DATASOURCE_USERNAME=root \ -e SPRING_DATASOURCE_PASSWORD=secret"
     CONTAINER_NAME_SUFFIX: ""
   script:
     - AUTH_COMMAND="echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin";
@@ -46,7 +47,7 @@
       --log-driver local
       --log-opt max-size=100m
       --name=$CI_DB_CONTAINER_NAME
-      $DB_ENV
+      $SPRING_ENV
       $CI_DB_OPT
       $DB_IMAGE_NAME"
     #- ssh $SSH_ADDRESS "$AUTH_COMMAND"
@@ -63,6 +64,7 @@
       --log-opt max-size=100m
       --volume pgdata:/var/lib/postgresql/data
       --name=$CI_PROJECT_NAME $OPT_DOCKER
+      $DB_ENV
       $IMAGE_NAME"
     #    - ssh $SSH_ADDRESS "
 #      docker run -d
