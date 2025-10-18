@@ -21,7 +21,6 @@ public interface QueueRepository extends JpaRepository<QueueEntity, Long> {
     );
 
     default Integer findMaxPositionByGroupIdAlternative(Long groupId) {
-        // Находим первую запись с максимальной позицией
         Optional<QueueEntity> topItem = findTopByGroupIdAndStatusOrderByPositionDesc(groupId, QueueStatus.WAITING);
         return topItem.map(QueueEntity::getPosition).orElse(0);
     }

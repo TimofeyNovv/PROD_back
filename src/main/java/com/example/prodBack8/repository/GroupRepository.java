@@ -2,6 +2,8 @@ package com.example.prodBack8.repository;
 
 import com.example.prodBack8.model.entity.group.GroupEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -16,4 +18,7 @@ public interface GroupRepository extends JpaRepository<GroupEntity, Long> {
     Optional<GroupEntity> getGroupByName(String name);
 
     Optional<GroupEntity> findByName(String name);
+
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.group.id = :groupId")
+    Long countMembersByGroupId(@Param("groupId") Long groupId);
 }

@@ -11,4 +11,5 @@ public interface TaskService {
     Integer getDistributionGroupByUserId(UserEntity entity);
     Integer getMaxSessionDurationGroupByUserId(UserEntity entity);
     String getAllowedTimeGroupByUserId(UserEntity entity);
+    Long getCountMembersGroupById(UserEntity entity);
 }

@@ -166,26 +166,31 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public String getGroupNameByUserId(UserEntity entity) {
         return entity.getGroup().getName();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Integer getCurrentCountGPUByUserId(UserEntity entity) {
         return entity.getGroup().getCurrentGPUCount();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Integer getDistributionGroupByUserId(UserEntity entity) {
         return entity.getGroup().getDistribution();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Integer getMaxSessionDurationGroupByUserId(UserEntity entity) {
         return entity.getGroup().getUsageLimit().getMaxSessionDurationMinutes();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public String getAllowedTimeGroupByUserId(UserEntity entity) {
 
         GroupEntity group = entity.getGroup();
@@ -203,6 +208,13 @@ public class TaskServiceImpl implements TaskService {
         String timeRange = formatTimeRange(usageLimit.getDayStartTime(), usageLimit.getDayEndTime());
 
         return String.format("Дни: %s, Время: %s", days, timeRange);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long getCountMembersGroupById(UserEntity entity) {
+        Long groupId = Long.valueOf(entity.getGroup().getId());
+        return groupRepository.countMembersByGroupId(groupId);
     }
 
     private String formatDays(String allowedDays) {

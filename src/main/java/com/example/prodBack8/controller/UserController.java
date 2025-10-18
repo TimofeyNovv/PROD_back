@@ -65,7 +65,7 @@ public class UserController {
             }
     )
     @GetMapping("/group/name")
-    public String getGroupNameByUserId(@AuthenticationPrincipal UserEntity currentUser) {
+    public String getGroupName(@AuthenticationPrincipal UserEntity currentUser) {
         return taskService.getGroupNameByUserId(currentUser);
     }
 
@@ -80,7 +80,7 @@ public class UserController {
             }
     )
     @GetMapping("/gpu/count")
-    public Integer getCurrentCountGPUByUserId(@AuthenticationPrincipal UserEntity currentUser) {
+    public Integer getCurrentCountGPU(@AuthenticationPrincipal UserEntity currentUser) {
         return taskService.getCurrentCountGPUByUserId(currentUser);
     }
 
@@ -95,7 +95,7 @@ public class UserController {
             }
     )
     @GetMapping("/group/distribution")
-    public Integer getDistributionGroupByUserId(@AuthenticationPrincipal UserEntity currentUser) {
+    public Integer getDistributionGroup(@AuthenticationPrincipal UserEntity currentUser) {
         return taskService.getDistributionGroupByUserId(currentUser);
     }
 
@@ -110,7 +110,7 @@ public class UserController {
             }
     )
     @GetMapping("/group/maxsession")
-    public Integer getMaxSessionDurationGroupByUserId(@AuthenticationPrincipal UserEntity currentUser) {
+    public Integer getMaxSessionDurationGroup(@AuthenticationPrincipal UserEntity currentUser) {
         return taskService.getMaxSessionDurationGroupByUserId(currentUser);
     }
 
@@ -125,7 +125,15 @@ public class UserController {
             }
     )
     @GetMapping("/group/time")
-    public String getAllowedTimeGroupByUserId(@AuthenticationPrincipal UserEntity currentUser) {
+    public String getAllowedTimeGroup(@AuthenticationPrincipal UserEntity currentUser) {
         return taskService.getAllowedTimeGroupByUserId(currentUser);
+    }
+
+    @Operation(
+            summary = "узнать количество пользователей в текущей группе"
+    )
+    @GetMapping("group/count")
+    public Integer getCountMembersGroup(@AuthenticationPrincipal UserEntity currentUser){
+        return Math.toIntExact(taskService.getCountMembersGroupById(currentUser));
     }
 }
