@@ -1,10 +1,3 @@
-#FROM maven:4.0.0 AS build
-#RUN mkdir -p /usr/app
-#WORKDIR /usr/app
-#COPY ../ /usr/app/
-#RUN ls -la ../
-#RUN mvn -f ./pom.xml clean package
-
 FROM eclipse-temurin:17-jdk-jammy AS build
 ENV HOME=/usr/app
 RUN mkdir -p $HOME
