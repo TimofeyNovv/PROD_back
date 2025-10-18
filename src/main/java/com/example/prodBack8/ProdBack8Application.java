@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ProdBack8Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ProdBack8Application.class, args);
+        SpringApplication.run(ProdBack8Application.class, args);
 	}
 
 }
