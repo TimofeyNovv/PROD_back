@@ -33,6 +33,7 @@
     DB_USER: "root"
     DB_PASSWORD: "secret"
     DB_DATABASE: "testdb"
+    NET_NAME: "testnet"
     DB_ENV: "-e POSTGRES_USER=${DB_USER} \ -e POSTGRES_PASSWORD=${DB_PASSWORD} \ -e POSTGRES_DB={DB_DATABASE}"
     SPRING_ENV: " -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/testdb \ -e SPRING_DATASOURCE_USERNAME=root \ -e SPRING_DATASOURCE_PASSWORD=secret"
     CONTAINER_NAME_SUFFIX: ""
@@ -42,11 +43,13 @@
     - ssh $SSH_ADDRESS "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
     - ssh $SSH_ADDRESS "docker stop $CI_PROJECT_NAME || true"
     - ssh $SSH_ADDRESS "docker rm $CI_PROJECT_NAME || true"
+    - ssh $SSH_ADDRESS "docker network create $NET_NAME || echo 'Net exists'"
     - ssh $SSH_ADDRESS "
-      docker start $CI_DB_CONTAINER_NAME || docker run -d
+      docker start ${CI_DB_CONTAINER_NAME} || docker run -d
       --log-driver local
       --log-opt max-size=100m
       --name=$CI_DB_CONTAINER_NAME
+      --network ${NET_NAME}
       $CI_DB_OPT
       $DB_ENV
       $DB_IMAGE_NAME"
@@ -63,7 +66,8 @@
       --log-driver local
       --log-opt max-size=100m
       --volume pgdata:/var/lib/postgresql/data
-      --name=$CI_PROJECT_NAME 
+      --name=$CI_PROJECT_NAME
+      --network ${NET_NAME}
       $SPRING_ENV
       $OPT_DOCKER
       $IMAGE_NAME"
