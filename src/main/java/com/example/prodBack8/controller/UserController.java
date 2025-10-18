@@ -53,6 +53,7 @@ public class UserController {
     }
 
 
+
     @Operation(
             summary = "получить название группы",
             description = "получить название группы в которой находится пользователь"
@@ -63,8 +64,8 @@ public class UserController {
             }
     )
     @GetMapping("/group/name")
-    public ResponseEntity<?> getGroupIdByUserId(@AuthenticationPrincipal UserEntity currentUser) {
-        return ResponseEntity.ok().build();
+    public String getGroupNameByUserId(@AuthenticationPrincipal UserEntity currentUser) {
+        return taskService.getGroupNameByUserId(currentUser);
     }
 
 
@@ -78,9 +79,8 @@ public class UserController {
             }
     )
     @GetMapping("/gpu/count")
-    public ResponseEntity<?> getCountGPUByUserId(@AuthenticationPrincipal UserEntity currentUser) {
-        //здесь дернуть группу, в которой находится пользователь, и потом у группы дернуть кол-во оставшихся gpu
-        return ResponseEntity.ok().build();
+    public Integer getCurrentCountGPUByUserId(@AuthenticationPrincipal UserEntity currentUser) {
+        return taskService.getCurrentCountGPUByUserId(currentUser);
     }
 
 
@@ -95,9 +95,8 @@ public class UserController {
             }
     )
     @GetMapping("/group/distribution")
-    public ResponseEntity<?> getDistributionGroupByUserId(@AuthenticationPrincipal UserEntity currentUser) {
-        //здесь дернуть группу пользователя и потом у группы дернуть distribution
-        return ResponseEntity.ok().build();
+    public Integer getDistributionGroupByUserId(@AuthenticationPrincipal UserEntity currentUser) {
+        return taskService.getDistributionGroupByUserId(currentUser);
     }
 
 
@@ -112,9 +111,8 @@ public class UserController {
             }
     )
     @GetMapping("/group/maxsession")
-    public ResponseEntity<?> getMaxSessionDurationGroupByUserId(@AuthenticationPrincipal UserEntity currentUser){
-        //здесь дернуть группу пользователя у группы UsageLimit и у UsageLimit дернуть maxSessionDurationMinutes
-        return ResponseEntity.ok().build();
+    public Integer getMaxSessionDurationGroupByUserId(@AuthenticationPrincipal UserEntity currentUser){
+        return taskService.getMaxSessionDurationGroupByUserId(currentUser);
     }
 
 
@@ -127,9 +125,8 @@ public class UserController {
                     @ApiResponse(responseCode = "200", description = "успешно"),
             }
     )
-    @GetMapping("/group/time/")
-    public ResponseEntity<?> getAllowedTimeGroupByUserId(@AuthenticationPrincipal UserEntity currentUser){
-        //дернуть группу у пользователя и у группы дернуть UsageLimit и у UsageLimit дернуть allowedDays dayStartTime dayEndTime
-        return ResponseEntity.ok().build();
+    @GetMapping("/group/time")
+    public String getAllowedTimeGroupByUserId(@AuthenticationPrincipal UserEntity currentUser){
+        return taskService.getAllowedTimeGroupByUserId(currentUser);
     }
 }

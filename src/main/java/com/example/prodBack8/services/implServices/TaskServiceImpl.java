@@ -1,8 +1,10 @@
 package com.example.prodBack8.services.implServices;
 
+import com.example.prodBack8.exceptions.GroupNotFoundException;
 import com.example.prodBack8.exceptions.NoActiveSessionException;
 import com.example.prodBack8.exceptions.NoGPULeftException;
 import com.example.prodBack8.model.entity.group.GroupEntity;
+import com.example.prodBack8.model.entity.group.UsageLimit;
 import com.example.prodBack8.model.entity.history.TaskEntity;
 import com.example.prodBack8.model.entity.history.TaskStatus;
 import com.example.prodBack8.model.entity.user.UserEntity;
@@ -70,6 +72,69 @@ public class TaskServiceImpl implements TaskService {
         GroupEntity group = userEntity.getGroup();
         group.setCurrentGPUCount(userEntity.getGroup().getCurrentGPUCount() + 1);
         groupRepository.save(group);
+    }
+
+    @Override
+    public String getGroupNameByUserId(UserEntity entity) {
+        return entity.getGroup().getName();
+    }
+
+    @Override
+    public Integer getCurrentCountGPUByUserId(UserEntity entity) {
+        return entity.getGroup().getCurrentGPUCount();
+    }
+
+    @Override
+    public Integer getDistributionGroupByUserId(UserEntity entity) {
+        return entity.getGroup().getDistribution();
+    }
+
+    @Override
+    public Integer getMaxSessionDurationGroupByUserId(UserEntity entity) {
+        return entity.getGroup().getUsageLimit().getMaxSessionDurationMinutes();
+    }
+
+    @Override
+    public String getAllowedTimeGroupByUserId(UserEntity entity) {
+
+        GroupEntity group = entity.getGroup();
+        if (group == null) {
+            throw new GroupNotFoundException("Пользователь не принадлежит к группе");
+        }
+
+        UsageLimit usageLimit = group.getUsageLimit();
+        if (usageLimit == null) {
+            return "Ограничения не установлены";
+        }
+
+        // Форматируем время в читаемый вид
+        String days = formatDays(usageLimit.getAllowedDays());
+        String timeRange = formatTimeRange(usageLimit.getDayStartTime(), usageLimit.getDayEndTime());
+
+        return String.format("Дни: %s, Время: %s", days, timeRange);
+    }
+
+    private String formatDays(String allowedDays) {
+        if (allowedDays == null || allowedDays.trim().isEmpty()) {
+            return "все дни";
+        }
+
+        return allowedDays
+                .replace("MON", "Пн")
+                .replace("TUE", "Вт")
+                .replace("WED", "Ср")
+                .replace("THU", "Чт")
+                .replace("FRI", "Пт")
+                .replace("SAT", "Сб")
+                .replace("SUN", "Вс");
+    }
+
+    private String formatTimeRange(String startTime, String endTime) {
+        if (startTime == null || endTime == null) {
+            return "круглосуточно";
+        }
+
+        return String.format("%s - %s", startTime, endTime);
     }
 
     private boolean isAllowedDayAndTime(String allowedDays, String dayStartTime, String dayEndTime){
