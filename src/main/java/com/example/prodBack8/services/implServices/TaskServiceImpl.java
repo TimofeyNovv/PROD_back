@@ -1,5 +1,6 @@
 package com.example.prodBack8.services.implServices;
 
+import com.example.prodBack8.exceptions.NoActiveSessionException;
 import com.example.prodBack8.exceptions.NoGPULeftException;
 import com.example.prodBack8.model.entity.group.GroupEntity;
 import com.example.prodBack8.model.entity.history.TaskEntity;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -49,6 +51,25 @@ public class TaskServiceImpl implements TaskService {
         groupRepository.save(group);
         taskRepository.save(task);
 
+    }
+
+    @Override
+    public void endGPUSession(UserEntity userEntity) {
+        TaskEntity activeTask = taskRepository.findByUserAndStatus(userEntity, TaskStatus.ACTIVE)
+                .orElseThrow(() -> new NoActiveSessionException("У пользователя нет активной сессии"));
+
+        activeTask.setEndTime(LocalDateTime.now());
+
+
+        Duration usageDuration = Duration.between(activeTask.getStartTime(), activeTask.getEndTime());
+        long minutes = usageDuration.toMinutes();
+        activeTask.setUsageDuration((int) minutes);
+
+        activeTask.setStatus(TaskStatus.COMPLETED);
+        taskRepository.save(activeTask);
+        GroupEntity group = userEntity.getGroup();
+        group.setCurrentGPUCount(userEntity.getGroup().getCurrentGPUCount() + 1);
+        groupRepository.save(group);
     }
 
     private boolean isAllowedDayAndTime(String allowedDays, String dayStartTime, String dayEndTime){

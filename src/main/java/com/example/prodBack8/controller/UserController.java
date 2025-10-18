@@ -40,9 +40,15 @@ public class UserController {
             summary = "закончить сессию с gpu",
             description = "заканчивает сессию с gpu"
     )
+    @ApiResponses(
+            {
+                    @ApiResponse(responseCode = "200", description = "успешный конец сессии"),
+                    @ApiResponse(responseCode = "404", description = "в пользователя не найдено активных сессий")
+            }
+    )
     @PostMapping("/endsession")
     public ResponseEntity<?> endGPUSession(@AuthenticationPrincipal UserEntity currentUser) {
-        //нужно записать время использования и время конца использования в таске
+        taskService.endGPUSession(currentUser);
         return ResponseEntity.ok().build();
     }
 

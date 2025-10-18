@@ -45,4 +45,10 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse("NO_GPU_LEFT", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
+    @ExceptionHandler(NoActiveSessionException.class)
+    public ResponseEntity<ErrorResponse> handleNoActiveSessionException(NoActiveSessionException ex){
+        ErrorResponse errorResponse = new ErrorResponse("NO_ACTIVE_SESSIONS", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
 }
