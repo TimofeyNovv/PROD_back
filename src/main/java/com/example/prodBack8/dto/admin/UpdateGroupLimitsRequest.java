@@ -16,13 +16,13 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Schema(description = "DTO для установки ограничений группы")
 public class UpdateGroupLimitsRequest {
-    @Min(1)
-    @Max(1440) // 24 часа в минутах
+
     private Integer maxSessionDurationMinutes;
 
 
     // Или для раздельного хранения:
     private String allowedDays;
-    private LocalTime dayStartTime;
-    private LocalTime dayEndTime;
+    private String dayStartTime;
+    private String dayEndTime;
+
 }
