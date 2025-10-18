@@ -1,3 +1,4 @@
+---
 .ssh:
   image: kroniak/ssh-client:3.19
   variables:
