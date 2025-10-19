@@ -273,13 +273,11 @@ public class TaskServiceImpl implements TaskService {
     private boolean isCurrentTimeAllowed(String dayStartTime, String dayEndTime) {
 
         try {
-            System.out.println("норм1");
             // Парсим время из строк "10:00"
             LocalTime startTime = LocalTime.parse(dayStartTime);
             LocalTime endTime = LocalTime.parse(dayEndTime);
             LocalTime currentTime = LocalTime.now();
 
-            System.out.println("норм2");
             // Проверяем, что текущее время в разрешенном интервале
             return !currentTime.isBefore(startTime) && !currentTime.isAfter(endTime);
         } catch (Exception e) {

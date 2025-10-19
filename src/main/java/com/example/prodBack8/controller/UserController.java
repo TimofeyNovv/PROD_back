@@ -1,7 +1,9 @@
 package com.example.prodBack8.controller;
 
 import com.example.prodBack8.model.entity.user.UserEntity;
+import com.example.prodBack8.model.entity.user.UserRole;
 import com.example.prodBack8.services.implServices.TaskServiceImpl;
+import com.example.prodBack8.services.implServices.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final TaskServiceImpl taskService;
+    private final UserServiceImpl userService;
 
     @Operation(
             summary = "начать сессию с gpu",
@@ -135,5 +138,13 @@ public class UserController {
     @GetMapping("group/count")
     public Integer getCountMembersGroup(@AuthenticationPrincipal UserEntity currentUser){
         return Math.toIntExact(taskService.getCountMembersGroupById(currentUser));
+    }
+
+    @Operation(
+            summary = "узнать статус пользователя"
+    )
+    @GetMapping("user/status")
+    public UserRole getRole(@AuthenticationPrincipal UserEntity currentUser){
+        return userService.getUserRole(currentUser);
     }
 }

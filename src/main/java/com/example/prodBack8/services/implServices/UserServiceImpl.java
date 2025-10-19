@@ -7,6 +7,7 @@ import com.example.prodBack8.exceptions.GroupNotFoundException;
 import com.example.prodBack8.exceptions.UserNotFoundException;
 import com.example.prodBack8.model.entity.group.GroupEntity;
 import com.example.prodBack8.model.entity.user.UserEntity;
+import com.example.prodBack8.model.entity.user.UserRole;
 import com.example.prodBack8.repository.GroupRepository;
 import com.example.prodBack8.repository.UserRepository;
 import com.example.prodBack8.services.UserService;
@@ -71,6 +72,13 @@ public class UserServiceImpl implements UserService {
             retUsers.add(user);
         }
         return retUsers;
+    }
+
+    @Override
+    public UserRole getUserRole(UserEntity userEntity) {
+
+        return userRepository.findRoleById(Long.valueOf(userEntity.getId()))
+                .orElseThrow(() -> new UserNotFoundException("пользователь не найден"));
     }
 
 
