@@ -94,9 +94,11 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("пользователь с username - " + username + " не найден"));
         userRepository.deleteByUsername(username);
-        GroupEntity groupEntity = userEntity.getGroup();
-        groupEntity.setMembersCount(groupEntity.getMembersCount() - 1);
-        groupRepository.save(groupEntity);
+        if (userEntity.getGroup() != null){
+            GroupEntity groupEntity = userEntity.getGroup();
+            groupEntity.setMembersCount(groupEntity.getMembersCount() - 1);
+            groupRepository.save(groupEntity);
+        }
     }
 
     @Override
