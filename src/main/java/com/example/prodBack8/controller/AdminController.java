@@ -50,9 +50,8 @@ public class AdminController {
             @ApiResponse(responseCode = "403", description = "нет прав доступа")
     })
     @PostMapping("/group")
-    public ResponseEntity<?> createResourceGroup(@RequestBody CreateGroupRequest request) {
-        groupService.create(request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<GroupEntity> createResourceGroup(@RequestBody CreateGroupRequest request) {
+        return ResponseEntity.ok().body(groupService.create(request));
     }
 
     @Operation(

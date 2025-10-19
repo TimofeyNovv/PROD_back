@@ -22,7 +22,7 @@ public class GroupServiceImpl implements GroupService {
     private final GroupRepository repository;
 
     @Override
-    public void create(CreateGroupRequest request) {
+    public GroupEntity create(CreateGroupRequest request) {
         String nameGroup = request.getNameGroup();
         if (repository.existsByName(nameGroup)) {
             throw new GroupAlreadyExistsException("group with name - " + nameGroup + "already exists");
@@ -34,6 +34,7 @@ public class GroupServiceImpl implements GroupService {
                 .distribution(request.getDistribution())
                 .build();
         repository.save(entity);
+        return entity;
     }
 
     @Override

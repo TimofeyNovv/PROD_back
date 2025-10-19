@@ -7,7 +7,7 @@ import com.example.prodBack8.model.entity.group.GroupEntity;
 import java.util.List;
 
 public interface GroupService {
-    void create(CreateGroupRequest request);
+    GroupEntity create(CreateGroupRequest request);
     void updateGroupLimits(Long groupId, UpdateGroupLimitsRequest request);
     List<GroupEntity> getAllGroups();
 }
