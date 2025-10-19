@@ -99,5 +99,12 @@ public class UserServiceImpl implements UserService {
         groupRepository.save(groupEntity);
     }
 
+    @Override
+    public Integer getCountUsersInCurrentGroup(Integer groupId) {
+        if (groupRepository.findById(Long.valueOf(groupId)) == null){
+            throw new GroupNotFoundException("группы с id - " + groupId + "не существует");
+        }
+        return userRepository.getCountUsersInCurrentGroup(Long.valueOf(groupId));
+    }
 
 }

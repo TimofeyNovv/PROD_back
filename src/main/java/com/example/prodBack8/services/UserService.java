@@ -16,4 +16,6 @@ public interface UserService {
     List<UserAllResponse> getAllUsers();
     UserRole getUserRole(UserEntity userEntity);
     void deleteUserByUsername(String username);
+    Integer getCountUsersInCurrentGroup(Integer groupId);
+
 }

@@ -147,4 +147,5 @@ public class UserController {
     public UserRole getRole(@AuthenticationPrincipal UserEntity currentUser){
         return userService.getUserRole(currentUser);
     }
+
 }

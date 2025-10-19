@@ -110,5 +110,13 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(
+            summary = "получить количество юзеров в группе по groupId"
+    )
+    @GetMapping("user/count/{groupId}")
+    public Integer getCountUsersInCurrentGroup(@PathVariable Integer groupId){
+        return userService.getCountUsersInCurrentGroup(groupId);
+    }
+
 
 }

@@ -217,9 +217,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(readOnly = true)
-    public Long getCountMembersGroupById(UserEntity entity) {
-        Long groupId = Long.valueOf(entity.getGroup().getId());
-        return groupRepository.countMembersByGroupId(groupId);
+    public Integer getCountMembersGroupById(UserEntity currentUser) {
+        if (currentUser.getGroup() == null) {
+            throw new GroupNotFoundException("Пользователь не находится в группе");
+        }
+
+        Long groupId = Long.valueOf(currentUser.getGroup().getId());
+        return userRepository.getCountUsersInCurrentGroup(groupId);
     }
 
     private String formatDays(String allowedDays) {

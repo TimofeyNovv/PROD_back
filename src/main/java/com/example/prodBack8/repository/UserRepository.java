@@ -20,4 +20,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserRole> findRoleById(@Param("userId") Long userId);
 
     void deleteByUsername(String username);
+
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.group.id = :groupId")
+    Integer getCountUsersInCurrentGroup(@Param("groupId") Long groupId);
 }
