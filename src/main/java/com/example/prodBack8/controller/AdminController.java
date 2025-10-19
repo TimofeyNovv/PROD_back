@@ -1,10 +1,8 @@
 package com.example.prodBack8.controller;
 
-import com.example.prodBack8.dto.admin.CreateGroupRequest;
-import com.example.prodBack8.dto.admin.SetGroupForUserRequest;
-import com.example.prodBack8.dto.admin.SetRemainingUsageTimeGPURequest;
-import com.example.prodBack8.dto.admin.UpdateGroupLimitsRequest;
+import com.example.prodBack8.dto.admin.*;
 import com.example.prodBack8.model.entity.group.GroupEntity;
+import com.example.prodBack8.model.entity.user.UserEntity;
 import com.example.prodBack8.services.implServices.GroupServiceImpl;
 import com.example.prodBack8.services.implServices.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,6 +87,14 @@ public class AdminController {
     public ResponseEntity<?> setRemainingUsageTimeGPU(@RequestBody SetRemainingUsageTimeGPURequest request){
         userService.setRemainingUsageTimeGPU(request);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(
+            summary = "Получить всех пользователей"
+    )
+    @GetMapping("user/all")
+    public List<UserAllResponse> getAllUsers(){
+        return userService.getAllUsers();
     }
 
 
