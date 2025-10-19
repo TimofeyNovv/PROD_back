@@ -33,7 +33,7 @@ public class SecurityConfig {
                                         "/swagger-resources/**"
                                 )
                                 .permitAll()
-                                .requestMatchers("/api/admin/**", "api/auth/register").hasAuthority("ADMIN")
+                                .requestMatchers("/api/admin/**", "api/auth/register", "api/history/**").hasAuthority("ADMIN")
                                 .anyRequest()
                                 .authenticated()
                 )

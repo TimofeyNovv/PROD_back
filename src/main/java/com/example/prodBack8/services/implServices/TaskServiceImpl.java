@@ -1,5 +1,8 @@
 package com.example.prodBack8.services.implServices;
 
+import com.example.prodBack8.dto.GroupDTO;
+import com.example.prodBack8.dto.TaskDTO;
+import com.example.prodBack8.dto.UserDTO;
 import com.example.prodBack8.exceptions.*;
 import com.example.prodBack8.model.entity.group.GroupEntity;
 import com.example.prodBack8.model.entity.group.UsageLimit;
@@ -21,9 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -144,6 +149,7 @@ public class TaskServiceImpl implements TaskService {
         log.info("Распределено {} GPU из {} доступных для группы {}",
                 allocatedGPUs, availableGPUs, groupId);
     }
+
     private void startGPUSessionForQueueUser(UserEntity user, QueueEntity queueItem) {
         boolean hasActiveSession = taskRepository.findByUserAndStatus(user, TaskStatus.ACTIVE).isPresent();
         if (hasActiveSession) {
@@ -224,6 +230,53 @@ public class TaskServiceImpl implements TaskService {
 
         Long groupId = Long.valueOf(currentUser.getGroup().getId());
         return userRepository.getCountUsersInCurrentGroup(groupId);
+    }
+
+    @Override
+    public List<TaskDTO> getAllTasks() {
+        List<TaskEntity> list = taskRepository.findAll();
+        List<TaskDTO> retList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            TaskEntity cur = list.get(i);
+            GroupEntity curGroup = cur.getGroup();
+            GroupDTO groupDTO = GroupDTO
+                    .builder()
+                    .name(curGroup.getName())
+                    .id(Long.valueOf(curGroup.getId())).build();
+            UserEntity curUser = list.get(i).getUser();
+            UserDTO userDTO = UserDTO.builder()
+                    .id(Long.valueOf(curUser.getId()))
+                    .username(curUser.getUsername())
+                    .firstname(curUser.getFirstname())
+                    .lastname(curUser.getLastname())
+                    .group(groupDTO)
+                    .build();
+            if (cur.getEndTime() == null) {
+                TaskDTO dto = TaskDTO.builder()
+                        .id(Long.valueOf(cur.getId()))
+                        .countGPU(cur.getCountGPU())
+                        .user(userDTO)
+                        .group(groupDTO)
+                        .startTime(cur.getStartTime())
+                        .status(cur.getStatus())
+                        .build();
+                retList.add(dto);
+            } else {
+                TaskDTO dto = TaskDTO.builder()
+                        .id(Long.valueOf(cur.getId()))
+                        .countGPU(cur.getCountGPU())
+                        .user(userDTO)
+                        .group(groupDTO)
+                        .startTime(cur.getStartTime())
+                        .endTime(cur.getEndTime())
+                        .status(cur.getStatus())
+                        .usageDuration(cur.getUsageDuration())
+                        .build();
+                retList.add(dto);
+            }
+
+        }
+        return retList;
     }
 
     private String formatDays(String allowedDays) {
