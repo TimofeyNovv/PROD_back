@@ -45,7 +45,7 @@ public class UserEntity extends BaseEntity implements UserDetails{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<TaskEntity> tasks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<QueueEntity> queueItems = new ArrayList<>();
 
     private Integer remainingUsageTimeGPU;

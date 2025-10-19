@@ -61,11 +61,9 @@ public class QueueController {
         return null;
     }
 
-    @GetMapping("/position")
     @Operation(summary = "Получить позицию пользователя в очереди")
-    public ResponseEntity<Integer> getUserPosition(
-            @RequestParam Long userId,
-            @RequestParam Long groupId) {
-        return null;
+    @GetMapping("/position")
+    public Integer getUserPosition(@AuthenticationPrincipal UserEntity currentUser) {
+        return queueService.getUserPosition(currentUser);
     }
 }

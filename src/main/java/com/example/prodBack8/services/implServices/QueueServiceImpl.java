@@ -11,11 +11,13 @@ import com.example.prodBack8.repository.QueueRepository;
 import com.example.prodBack8.services.QueueService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -42,15 +44,15 @@ public class QueueServiceImpl implements QueueService {
                 List.of(QueueStatus.WAITING, QueueStatus.ACTIVE)
         );
 
-        if (existingQueueItem.isPresent()){
+        if (existingQueueItem.isPresent()) {
             QueueEntity existingItem = existingQueueItem.get();
-            switch (existingItem.getStatus()){
-                case WAITING ->{
-                        throw new YouAreInTheQueueException(
-                                String.format("Вы уже находитесь в очереди на позиции %d", existingItem.getPosition())
-                        );
+            switch (existingItem.getStatus()) {
+                case WAITING -> {
+                    throw new YouAreInTheQueueException(
+                            String.format("Вы уже находитесь в очереди на позиции %d", existingItem.getPosition())
+                    );
                 }
-                case ACTIVE ->{
+                case ACTIVE -> {
                     throw new ActiveSessionException("У вас уже есть активная сессия GPU");
                 }
 
@@ -128,10 +130,23 @@ public class QueueServiceImpl implements QueueService {
 
     }
 
+    @Override
+    public Integer getUserPosition(UserEntity currentUser) {
+        try {
+            Optional<QueueEntity> queueItemOpt = currentUser.getQueueItems().stream()
+                    .filter(item -> item.getStatus() == QueueStatus.WAITING)
+                    .findFirst();
+            Integer position = queueItemOpt.get().getPosition();
+            return position;
+        } catch (NoSuchElementException exception) {
+            throw new UserInQueueNotFoundException("пользователь не находится в очереди");
+        }
 
-        // Получаем актуальное количество в очереди
-        //Long currentQueueSize = queueRepository.countByGroupIdAndStatus(Long.valueOf(groupId), QueueStatus.WAITING);
+    }
 
+
+    // Получаем актуальное количество в очереди
+    //Long currentQueueSize = queueRepository.countByGroupIdAndStatus(Long.valueOf(groupId), QueueStatus.WAITING);
 
 
 }
