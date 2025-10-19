@@ -233,8 +233,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskDTO> getAllTasks() {
-        List<TaskEntity> list = taskRepository.findAll();
+    public List<TaskDTO> getAllTasks(Integer groupId) {
+        List<TaskEntity> list = taskRepository.findAllByGroupId(groupId);
         List<TaskDTO> retList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             TaskEntity cur = list.get(i);

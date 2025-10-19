@@ -1,7 +1,7 @@
 package com.example.prodBack8.controller;
 
+import com.example.prodBack8.dto.UserRoleResponse;
 import com.example.prodBack8.model.entity.user.UserEntity;
-import com.example.prodBack8.model.entity.user.UserRole;
 import com.example.prodBack8.services.implServices.TaskServiceImpl;
 import com.example.prodBack8.services.implServices.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -144,8 +144,12 @@ public class UserController {
             summary = "узнать статус пользователя"
     )
     @GetMapping("user/status")
-    public UserRole getRole(@AuthenticationPrincipal UserEntity currentUser){
-        return userService.getUserRole(currentUser);
+    public ResponseEntity<UserRoleResponse> getRole(@AuthenticationPrincipal UserEntity currentUser){
+        UserRoleResponse response = UserRoleResponse.builder()
+                .role(currentUser.getRole())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
 }

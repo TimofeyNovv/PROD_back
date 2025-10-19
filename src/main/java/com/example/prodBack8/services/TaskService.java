@@ -17,5 +17,5 @@ public interface TaskService {
     String getAllowedTimeGroupByUserId(UserEntity entity);
     Integer getCountMembersGroupById(UserEntity entity);
 
-    List<TaskDTO> getAllTasks();
+    List<TaskDTO> getAllTasks(Integer groupId);
 }

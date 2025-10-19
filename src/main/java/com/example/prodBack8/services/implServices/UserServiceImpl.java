@@ -84,7 +84,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserRole getUserRole(UserEntity userEntity) {
-
         return userRepository.findRoleById(Long.valueOf(userEntity.getId()))
                 .orElseThrow(() -> new UserNotFoundException("пользователь не найден"));
     }

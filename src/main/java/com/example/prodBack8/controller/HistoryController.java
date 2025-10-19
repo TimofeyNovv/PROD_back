@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,17 +16,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/history")
-@Tag(name = "Histry", description = "API для работы с историей")
+@Tag(name = "History", description = "API для работы с историей")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "jwtAuth")
 public class HistoryController {
 
     private final TaskServiceImpl taskService;
     @Operation(
-            description = "получить всю историю"
+            description = "получить всю историю группы по её id"
     )
-    @GetMapping("/all")
-    public List<TaskDTO> getAllTasks(){
-        return taskService.getAllTasks();
+    @GetMapping("/all/{groupId}")
+    public List<TaskDTO> getAllTasks(@PathVariable Integer groupId){
+        return taskService.getAllTasks(groupId);
     }
 }
