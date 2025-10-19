@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/user")
 @Tag(name = "User", description = "API для пользователя")
@@ -68,10 +71,10 @@ public class UserController {
             }
     )
     @GetMapping("/group/name")
-    public String getGroupName(@AuthenticationPrincipal UserEntity currentUser) {
-        return taskService.getGroupNameByUserId(currentUser);
+    public ResponseEntity<Map<String, String>> getGroupName(@AuthenticationPrincipal UserEntity currentUser) {
+        String groupName = taskService.getGroupNameByUserId(currentUser);
+        return ResponseEntity.ok(Collections.singletonMap("groupName", groupName));
     }
-
 
     @Operation(
             summary = "получить количество доступных gpu",
@@ -83,10 +86,10 @@ public class UserController {
             }
     )
     @GetMapping("/gpu/count")
-    public Integer getCurrentCountGPU(@AuthenticationPrincipal UserEntity currentUser) {
-        return taskService.getCurrentCountGPUByUserId(currentUser);
+    public ResponseEntity<Map<String, Integer>> getCurrentCountGPU(@AuthenticationPrincipal UserEntity currentUser) {
+        Integer count = taskService.getCurrentCountGPUByUserId(currentUser);
+        return ResponseEntity.ok(Collections.singletonMap("gpuCount", count));
     }
-
 
     @Operation(
             summary = "узнать какое распределение у группы",
@@ -98,10 +101,10 @@ public class UserController {
             }
     )
     @GetMapping("/group/distribution")
-    public Integer getDistributionGroup(@AuthenticationPrincipal UserEntity currentUser) {
-        return taskService.getDistributionGroupByUserId(currentUser);
+    public ResponseEntity<Map<String, Integer>> getDistributionGroup(@AuthenticationPrincipal UserEntity currentUser) {
+        Integer distribution = taskService.getDistributionGroupByUserId(currentUser);
+        return ResponseEntity.ok(Collections.singletonMap("distribution", distribution));
     }
-
 
     @Operation(
             summary = "узнать максимальное время выполнение задачи",
@@ -113,10 +116,10 @@ public class UserController {
             }
     )
     @GetMapping("/group/maxsession")
-    public Integer getMaxSessionDurationGroup(@AuthenticationPrincipal UserEntity currentUser) {
-        return taskService.getMaxSessionDurationGroupByUserId(currentUser);
+    public ResponseEntity<Map<String, Integer>> getMaxSessionDurationGroup(@AuthenticationPrincipal UserEntity currentUser) {
+        Integer maxSession = taskService.getMaxSessionDurationGroupByUserId(currentUser);
+        return ResponseEntity.ok(Collections.singletonMap("maxSessionDuration", maxSession));
     }
-
 
     @Operation(
             summary = "узнать ограничения по времени суток",
@@ -128,16 +131,18 @@ public class UserController {
             }
     )
     @GetMapping("/group/time")
-    public String getAllowedTimeGroup(@AuthenticationPrincipal UserEntity currentUser) {
-        return taskService.getAllowedTimeGroupByUserId(currentUser);
+    public ResponseEntity<Map<String, String>> getAllowedTimeGroup(@AuthenticationPrincipal UserEntity currentUser) {
+        String allowedTime = taskService.getAllowedTimeGroupByUserId(currentUser);
+        return ResponseEntity.ok(Collections.singletonMap("allowedTime", allowedTime));
     }
 
     @Operation(
             summary = "узнать количество пользователей в текущей группе"
     )
     @GetMapping("group/count")
-    public Integer getCountMembersGroup(@AuthenticationPrincipal UserEntity currentUser){
-        return Math.toIntExact(taskService.getCountMembersGroupById(currentUser));
+    public ResponseEntity<Map<String, Integer>> getCountMembersGroup(@AuthenticationPrincipal UserEntity currentUser) {
+        Long count = Long.valueOf(taskService.getCountMembersGroupById(currentUser));
+        return ResponseEntity.ok(Collections.singletonMap("membersCount", Math.toIntExact(count)));
     }
 
     @Operation(
