@@ -96,5 +96,19 @@ public class AdminController {
         return userService.getAllUsers();
     }
 
+    @Operation(
+            summary = "удаление пользователя по его имени"
+    )
+    @ApiResponses(
+            {
+                    @ApiResponse(responseCode = "404",  description = "пользователь не найден")
+            }
+    )
+    @DeleteMapping("user/delete/{username}")
+    public ResponseEntity<?> deleteUserByUsername(@PathVariable String username){
+        userService.deleteUserByUsername(username);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

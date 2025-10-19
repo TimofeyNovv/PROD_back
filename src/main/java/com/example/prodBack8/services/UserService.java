@@ -15,4 +15,5 @@ public interface UserService {
     void setRemainingUsageTimeGPU(SetRemainingUsageTimeGPURequest request);
     List<UserAllResponse> getAllUsers();
     UserRole getUserRole(UserEntity userEntity);
+    void deleteUserByUsername(String username);
 }

@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query("SELECT u.role FROM UserEntity u WHERE u.id = :userId")
     Optional<UserRole> findRoleById(@Param("userId") Long userId);
+
+    void deleteByUsername(String username);
 }

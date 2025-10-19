@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
         GroupEntity groupEntity = groupRepository.getGroupByName(request.getGroupName())
                 .orElseThrow(() -> new GroupNotFoundException("group with name - " + request.getGroupName() + " not found"));
         user.setGroup(groupEntity);
-        if (groupEntity.getMembersCount() != null){
+        if (groupEntity.getMembersCount() != null) {
             groupEntity.setMembersCount(groupEntity.getMembersCount() + 1);
         } else {
             groupEntity.setMembersCount(1);
@@ -61,10 +61,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserAllResponse> getAllUsers() {
         List<UserEntity> allUsers = userRepository.findAll();
         List<UserAllResponse> retUsers = new ArrayList<>();
-        for (int i = 0; i < allUsers.size() - 1; i++){
+        for (int i = 0; i < allUsers.size() - 1; i++) {
             UserAllResponse user = UserAllResponse.builder()
                     .id(allUsers.get(i).getId())
                     .username(allUsers.get(i).getUsername())
@@ -72,7 +73,7 @@ public class UserServiceImpl implements UserService {
                     .lastname(allUsers.get(i).getLastname())
                     .role(allUsers.get(i).getRole())
                     .build();
-            if (allUsers.get(i).getGroup() != null){
+            if (allUsers.get(i).getGroup() != null) {
                 user.setNameGroup(allUsers.get(i).getGroup().getName());
             }
             retUsers.add(user);
@@ -81,10 +82,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserRole getUserRole(UserEntity userEntity) {
 
         return userRepository.findRoleById(Long.valueOf(userEntity.getId()))
                 .orElseThrow(() -> new UserNotFoundException("пользователь не найден"));
+    }
+
+    @Override
+    public void deleteUserByUsername(String username) {
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("пользователь с username - " + username + " не найден"));
+        userRepository.deleteByUsername(username);
+        GroupEntity groupEntity = userEntity.getGroup();
+        groupEntity.setMembersCount(groupEntity.getMembersCount() - 1);
+        groupRepository.save(groupEntity);
     }
 
 
