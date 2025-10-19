@@ -2,7 +2,6 @@ package com.example.prodBack8.controller;
 
 import com.example.prodBack8.dto.admin.*;
 import com.example.prodBack8.model.entity.group.GroupEntity;
-import com.example.prodBack8.model.entity.user.UserEntity;
 import com.example.prodBack8.services.implServices.GroupServiceImpl;
 import com.example.prodBack8.services.implServices.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;

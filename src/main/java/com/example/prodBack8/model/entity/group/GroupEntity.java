@@ -19,6 +19,7 @@ public class GroupEntity extends BaseEntity {
     private Integer GPUcount;
     private Integer currentGPUCount;
     private Integer distribution;
+    private Integer membersCount;
 
     @Embedded
     private UsageLimit usageLimit;

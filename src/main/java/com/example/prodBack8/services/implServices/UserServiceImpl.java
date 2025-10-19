@@ -34,11 +34,17 @@ public class UserServiceImpl implements UserService {
         GroupEntity groupEntity = groupRepository.getGroupByName(request.getGroupName())
                 .orElseThrow(() -> new GroupNotFoundException("group with name - " + request.getGroupName() + " not found"));
         user.setGroup(groupEntity);
+        if (groupEntity.getMembersCount() != null){
+            groupEntity.setMembersCount(groupEntity.getMembersCount() + 1);
+        } else {
+            groupEntity.setMembersCount(1);
+        }
         if (user.getRemainingUsageTimeGPU() == null) {
             user.setRemainingUsageTimeGPU(groupEntity.getUsageLimit().getMaxSessionDurationMinutes());
         } else {
             user.setRemainingUsageTimeGPU(user.getRemainingUsageTimeGPU() + groupEntity.getUsageLimit().getMaxSessionDurationMinutes());
         }
+        groupRepository.save(groupEntity);
         userRepository.save(user);
     }
 

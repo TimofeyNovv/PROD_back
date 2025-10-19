@@ -55,6 +55,7 @@ public class DataLoader implements CommandLineRunner {
                             .GPUcount(4)
                             .currentGPUCount(16)
                             .distribution(25)
+                            .membersCount(4)
                             .usageLimit(usageLimit)
                             .build();
 
