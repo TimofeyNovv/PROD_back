@@ -24,3 +24,5 @@
 *   **Swagger**
 *   **Hibernate**
 *   **База данных:** PostgreSQL
+
+> Мобильное приложение: ![репозиторий](https://github.com/NotSoNymos/PROD-2025-FRONT)
